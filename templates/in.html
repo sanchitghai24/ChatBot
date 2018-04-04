@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Agent Chat</title>
+  <link rel="shortcut icon" href="static/avatar/blank.ico" />
+  <link rel="stylesheet" href="static/style/bootstrap.min.css">
+
+  <!--Google Icon Font-->
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+  <!-- Propeller css -->
+  <link href="static/style/propeller.min.css" rel="stylesheet">
+  <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css" rel="stylesheet">
+  <link rel="stylesheet" type="text/css" href="static/style/style.css">
+
+  <!--Animate css -->
+  <link rel="stylesheet" href="static/style/animate.min.css">
+
+<style type="text/css">
+  .pmd-textfield-focused {
+    background-color:#4285f4 !important;
+}
+</style>
+
+</head>
+
+
+<body>
+
+  <script src="static/require.js"></script>
+  <script>
+
+  function bindJS() {
+
+
+    $('.chat-body').css('height', (window.innerHeight - 140) +'px')
+    $('.main-container').css('opacity', '1');
+
+    //hide emoji popover on outside click
+    $(document).on('click', function (e) {
+
+      $('[data-toggle="popover"]').each(function () {
+
+        if (!$(this).is(e.target) && $(this).has(e.target).length === 0 && $('.popover').has(e.target).length === 0) {
+
+            if ($("#"+ $(this).attr("aria-describedby")+":visible").length){
+              $(this).trigger('click')
+            }
+
+          }
+
+
+      });
+
+    });
+
+    //triggered when modal is about to be shown
+    $('#center-dialog').on('show.bs.modal', function(e) {
+        $('#modal-img-holder').attr('src', $(e.relatedTarget).data('src'));
+        $('#modal-btndownload').attr('href', $(e.relatedTarget).data('src'));
+    });
+
+    document.getElementById("btn-input").focus();
+
+    $(document.body).ready(function(){
+    var isMobile = (/android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(navigator.userAgent.toLowerCase()));
+    if(isMobile) {
+       $("html").addClass("mobile-device");
+    } else {
+       $("html").addClass("desktop-device");
+    }
+});
+
+  }
+  require(['static/js/lib/jquery.min'], function () {
+    require(['static/js/lib/bootstrap.min'], function () {
+			require(['static/js/lib/propeller'], function () {
+        bindJS()
+		  });
+		});
+	});
+  </script>
+
+  <div class="container-fluid main-container no-scroll-x">
+
+    <div class="row header-popup">
+      <div class="pmd-card pmd-z-depth card-custom-view showheader" style="margin-bottom: 4px;">
+        <div class="pmd-card-body" style="margin:0px;">
+          <div class="table custom-size" style="margin:0px;">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="chat-body pmd-z-depth" id="style-3">
+        <div id="center-pic" class="chat-text-para col-xs-offset-4 col-xs-4 chat-welcome-message"><div style="border-radius:50%;border:5px solid white;width:70px;height:70px;background:#4285f4;box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.21), 0 6px 20px 0 rgba(0, 0, 0, 0);margin-top:10%;"> <i class="fa fa-comments custom-fa-comments" style = "font-size: 40px; color: white; margin-left:10px; margin-top:10px;"></i></div>
+          <!-- <img class="img-responsive" src="static/avatar/bot-logo-image.jpg" /> -->
+            
+          </div>
+        <h1 id="result" class="pmd-display3 col-xs-12 welcome-message">This is Human</h1>
+
+
+          <div id ="top-bar" class="header-text-logo hidden" style="background-color: white;height: 70px; padding-top: 5px; border-bottom:2px solid rgba(204, 204, 204, 0.59)">
+            <div class="col-xs-4">
+              <div style="border-radius:50%;border:5px solid white;width:70px;height:70px;background:#4285f4;box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.21), 0 6px 20px 0 rgba(0, 0, 0, 0);margin-top:10%;"> <i class="fa fa-comments custom-fa-comments" style = "font-size: 40px; color: white; margin-left:10px; margin-top:10px;"></i></div>
+            </div>
+            <div class="col-xs-8" style="padding: 13px 0 0 0;font-size: 120%;font-style: roboto;font-family: roboto;font-weight: 12%;color: #606060;"><b>A G E N T </b>
+            </div>
+            <div class="header-subtitle" style="font-family: roboto;font-size: small;color: #606060;padding: 0% 0% 0% 0%;top: -7px;position: relative;">
+            </div>
+          </div>
+
+        <ul id="msg_container" class="list-group pmd-list pmd-card-list hidden background-color-custom"></ul>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-xs-12" style="margin-top: 10px">
+        <div class="form-group pmd-textfield pmd-textfield-floating-label">
+          <div class="input-group">
+            <div class="input-group-addon">
+            </div>
+            <label class="control-label""></label>
+			<form id="enter" method="post" action = "/rest/api">
+            <textarea style="height:auto;resize: none;" rows="2" placeholder="Write your message here..." id="btn-input" required class="form-control" maxlength="250" name = "name"></textarea>
+			</form>
+            <div class="input-group-addon">
+
+                <div class="menu" role="navigation">
+                    <a id="btn-send-message" class="pmd-floating-action-btn btn btn-sm pmd-btn-fab pmd-btn-raised pmd-ripple-effect btn-primary"
+                      href="#" onclick="Chat()" style="background-color: #4285f4;">
+                              <span class="pmd-floating-hidden">Primary</span>
+                              <i class="material-icons pmd-sm">send</i>
+                            </a>
+                  </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-xs-12" style="font-size: x-small;color: darkgray;">
+          <button type="button" class="btn-link" style="color:#4285f4;padding-right: 0%;padding-left: 3%;" onClick="window.open('#'); ">Terms of Use and Conditions</button><span>© Copyright Chat Global</span>
+        </div>
+
+        <div tabindex="-1" class="modal fade" id="center-dialog" style="display: none;" aria-hidden="true">
+          <div class="modal-dialog">
+            <div class="modal-content" style="border-radius:10px">
+              <div class="modal-header">
+                <button aria-hidden="true" data-dismiss="modal" class="close" type="button">×</button>
+                  <div class="pmd-modal-media"> <img id="modal-img-holder" width="1184" height="666" class="img-responsive" src="http://propeller.in/assets/images/profile-pic.png">
+                  </div>
+                  <div class="pmd-modal-action" style="position: relative;text-align: right;">
+                    <a download="invoice_example.jpg" target="_blank" class="btn btn-sm pmd-btn-fab pmd-btn-flat pmd-ripple-effect btn-primary" id="modal-btndownload"> <i class="material-icons pmd-sm">file_download</i> </a>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+
+
+
+    </div>
+    </div>
+
+  </div>
+<script src="static/js/lib/jquery.min.js"></script>
+<script type="text/javascript"></script>
+
+<script>
+
+$('body').keypress(function(e){
+    if (e.KeyCode == 13){
+        letChat();
+    }
+});
+
+  // function addZero(i) {
+  //   if (i < 10) {
+  //       i = "0" + i;
+  //   }
+  //   return i;
+  // }
+
+
+// function getTimeStr() {
+//     var d = new Date();
+//     var h = addZero(d.getHours());
+//     var m = addZero(d.getMinutes());
+//     var s = addZero(d.getSeconds());
+//     var time_str = h + ":" + m + ":" + s;
+//     return time_str;
+// }
+
+function Chat(){
+  var Answer = $("#btn-input").val();
+  var user_qurey_str = '<li class="list-group-item background-color-custom"><div class="media-left pull-right animated fadeInRight" style="size: 10px; display:  inline;/* width: 10px; */padding-right: 0px;"><img style="border-radius: 50%; width: 40px !important;"  class="pull-right" src="static/avatar/a4.jpg" style="width: 40px;display: inline;"><div class="media-body user-txt-space" style="width:  80%; left:0px"><p class="list-group-item-text-user" style="margin-right: 0px;margin-left: 25px;">'+ Answer + '</p></div></div></li>'
+  $("#btn-input").val("");
+  $("#msg_container").append(user_qurey_str);  
+  $.get("/update_memcache/?ans="+Answer,function(data){
+
+  });
+}
+
+var last = 1 ;
+
+ function SyncChat() {
+// 	 $("#msg_container").children().remove();
+     $("#result").addClass("hidden");
+     $("#top-bar").removeClass("hidden");
+     $("#center-pic").addClass("hidden");
+     $("#msg_container").removeClass("hidden");
+//     var chat_query = $("#btn-input").val();
+    	 $.get('/CustomerAgent', function( data ) {
+	// 	console.log(data)
+	// 	var i;
+	// //	LASTCHATTIME = data['spech']
+ //    last = data['speech'].length;
+	// 	for (i = 0; i < data['speech'].length; i++) 
+	// 	{
+             var server_response_str = '<li class="animated fadeInLeft list-group-item background-color-custom"><table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td style="vertical-align:top;"><img style="border-radius: 50%;" width="35" height="35" src="static/avatar/a2.jpg"></td><td><div class="media-body bot-txt-space"><p class="list-group-item-text-bot">'+data['speech'][0]['query']+'</p></div></td></tr></tbody></table></li>';
+        
+             $("#msg_container").append(server_response_str);
+
+        if(!data['speech'][0]['response'])
+                {
+                  data['speech'][0]['response'] = "Hello Human, Please respond for above query";
+
+                  alert("Answer !!!!!!!");
+                }
+
+	 	    var user_qurey_str = '<li class="list-group-item background-color-custom"><div class="media-left pull-right animated fadeInRight" style="size: 10px; display:  inline;/* width: 10px; */padding-right: 0px;"><img style="border-radius: 50%; width: 40px !important;" class="pull-right" src="static/avatar/macy.jpg" style="width: 40px;display: inline;"><div class="media-body user-txt-space" style="width:  80%; left:0px"><p class="list-group-item-text-user" style="margin-right: 0px;margin-left: 25px;">'+ data['speech'][0]['response'] + '</p></div></div></li>'
+
+	 	    $("#msg_container").append(user_qurey_str);
+	 	    scrollSmoothToBottom($('div.chat-body'));
+	// 	    //$("#btn-input").val("");
+	// 	 //   if(chat_query.length>0){
+	// 	  //      console.log(data);
+		    
+	// 	       // scrollSmoothToBottom($('div.chat-body'));
+		      
+ //        }
+	 });
+}
+
+$(document).ready(function(){
+  SyncChat();
+});
+
+// SyncChat();
+setInterval(function(){ 
+  
+  $.get('/CustomerAgent',function(data){
+    console.log(last)
+    SecondLast = last -1 ;
+    console.log(data['speech'][SecondLast]['timestamp'])
+  var stamp = data['speech'][SecondLast]['timestamp']
+  for (var i =0; i <data['speech'].length; i++){
+      if (stamp<data['speech'][i]['timestamp']){
+        var server_response_str = '<li class="animated fadeInLeft list-group-item background-color-custom"><table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td style="vertical-align:top;"><img style="border-radius: 50%;" width="35" height="35" src="static/avatar/a2.jpg"></td><td><div class="media-body bot-txt-space"><p class="list-group-item-text-bot">'+data['speech'][i]['query']+'</p></div></td></tr></tbody></table></li>';
+        
+            $("#msg_container").append(server_response_str);
+
+        if(!data['speech'][i]['response'])
+        {
+          data['speech'][i]['response'] = "Hello, Please respond for above query";
+
+          alert("Answer !!!!!!!");
+        }
+
+        var user_qurey_str = '<li class="list-group-item background-color-custom"><div class="media-left pull-right animated fadeInRight" style="size: 10px; display:  inline;/* width: 10px; */padding-right: 0px;"><img style="border-radius: 50%; width: 40px !important;" class="pull-right" src="static/avatar/macy.jpg" style="width: 40px;display: inline;"><div class="media-body user-txt-space" style="width:  80%; left:0px"><p class="list-group-item-text-user" style="margin-right: 0px;margin-left: 25px;">'+ data['speech'][i]['response'] + '</p></div></div></li>'
+
+        $("#msg_container").append(user_qurey_str);
+        scrollSmoothToBottom($('div.chat-body'));
+        last++;
+        }
+      }
+  
+    })
+
+
+
+   }, 3000);
+
+ function scrollSmoothToBottom(element) {
+       setTimeout(() => {
+           var height = element[0].scrollHeight;
+         element.scrollTop(height);
+       }, 500);
+   }
+
+
+$("#enter").keypress(function(e){
+    var key = e.which ;
+    if (key == 13){
+        Chat();
+    }
+});
+
+
+
+</script>
+
+
+
+<!-- </scrip> -->
+</body>
+
+</html>
+
+
+<!--<!DOCTYPE html>
+<html>
+<head>
+	<title>Agent</title>
+</head>
+<body>
+	<div id="msg_container">
+		
+	</div>
+
+<script src="static/js/lib/jquery.min.js"></script>
+<script type="text/javascript">
+	$.get('/CustomerAgent', function( data ) {
+		console.log(data)
+		var i;
+		for (i = 0; i < data['speech'].length; i++) 
+		{
+			console.log(data['speech'][i]['query'])
+			var left = '<p>Customer ==>  '+data['speech'][i]['query']+'</p>'
+			$('#msg_container').append(left);
+			var right = '<p>Bot ==>>   '+data['speech'][i]['response']+'</p>'
+			$('#msg_container').append(right);	
+		}
+		
+	});
+</script>
+</body>
+</html>-->

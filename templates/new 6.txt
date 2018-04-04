@@ -1,0 +1,12 @@
+let me check because in cc9 everything is different
+when you issue gwab.bat
+Application Server Tasks
+------------------------
+earWeblogicDbcp - Build the EAR file for Weblogic including JDBC drivers.
+earWeblogicJndi - Build the EAR file for Weblogic without JDBC drivers.
+earWebsphereDbcp - Build the EAR file for Websphere including JDBC drivers.
+earWebsphereJndi - Build the EAR file for Websphere without JDBC drivers.
+warJbossDbcp - Build the WAR file for Jboss including JDBC drivers.
+warJbossJndi - Build the WAR file for Jboss without JDBC drivers.
+warTomcatDbcp - Build the WAR file for Tomcat including JDBC drivers.
+warTomcatJndi - Build the WAR file for Tomcat without JDBC drivers. 

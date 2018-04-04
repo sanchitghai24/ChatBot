@@ -1,0 +1,39 @@
+Create Content in Particular Folder:
+
+protected void createcontent_specificfolder(object sender, EventArgs e)
+        {
+            Dictionary<string, string> parameters = new Dictionary<string, string>();
+            parameters[DotCMIS.SessionParameter.BindingType] = BindingType.AtomPub;
+            parameters[DotCMIS.SessionParameter.AtomPubUrl] = "http://35.154.116.87:8030/alfresco/api/-default-/public/cmis/versions/1.0/atom";
+            parameters[DotCMIS.SessionParameter.User] = "admin";
+            parameters[DotCMIS.SessionParameter.Password] = "admin";
+            SessionFactory factory = SessionFactory.NewInstance();
+            ISession session = factory.GetRepositories(parameters)[0].CreateSession();
+
+            IOperationContext oc = session.CreateOperationContext();
+            oc.IncludeAcls = true;
+
+            IFolder folder1 = (IFolder)session.GetObjectByPath("/Ameex");
+
+            // document name
+            string formattedName = "YadTest.pdf";
+
+            // define dictionary
+            IDictionary<string, object> properties = new Dictionary<string, object>();
+            properties.Add(PropertyIds.Name, formattedName);
+
+            // define object type as document, as we wanted to create document
+            properties.Add(PropertyIds.ObjectTypeId, "cmis:document");
+
+            // fileUpload1: is a .net file upload control
+            ContentStream contentStream = new ContentStream
+            {
+                FileName = formattedName,
+                MimeType = "application/pdf",
+                Length = FileUpload1.FileBytes.Length,
+                Stream = new MemoryStream(FileUpload1.FileBytes)
+            };
+
+            // this statment would create document 
+            folder1.CreateDocument(properties, contentStream, null);
+        }

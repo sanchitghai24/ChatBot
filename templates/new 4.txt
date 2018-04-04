@@ -1,0 +1,91 @@
+Need to Have apache CMIS library
+
+For Getting repository ID for alfresco installation follow following steps:
+
+Hit URL for alfresco installation http://35.154.116.87:8030/alfresco/service/cmis.
+Enter your admin user name and password in login popup.
+If user have appropriate permission New file xml is downloaded with name cmis.
+Open file and get CMIS repository ID in cmisra:repositoryInfo between cmis:repositoryId tags.
+
+Create Alfresco CMIS Session
+
+// default factory implementation
+SessionFactory factory = SessionFactoryImpl.newInstance();
+// map to contain connection parameter for Alfresco repository using AtomPub Map
+<String, String> parameter = new HashMap<String, String>();
+parameter.put(SessionParameter.USER, "admin");
+parameter.put(SessionParameter.PASSWORD, "admin");
+parameter.put(SessionParameter.ATOMPUB_URL, "http://localhost:<<PORT>>/alfresco/service/cmis"); parameter.put(SessionParameter.BINDING_TYPE, BindingType.ATOMPUB.value());
+parameter.put(SessionParameter.REPOSITORY_ID, "<<REPOSITORY ID>>"); parameter.put(SessionParameter.OBJECT_FACTORY_CLASS,"org.alfresco.cmis.client.impl.AlfrescoObjectFactoryImpl");
+// getting Instance from User Credential
+try {
+// create session Session session = factory.createSession(parameter);
+} catch (Exception e)
+{
+e.printStackTrace();
+}
+
+Create New Document :
+1. First we need to follow code for creating Alfresco session.
+
+2. Create object for Alfresco folder or CMIS folder Object for storing document.
+
+Folder path could be any path within alfresco content repository
+public Folder retriveCMISFolder(Session session, String folderPath) throws ServiceException{
+if(session == null){
+throw new ServiceException(ServiceException.SuccessCode.UnauthorisedAccess, "NUll or empty Session Object");
+}
+if(folderPath == null || folderPath.isEmpty()){
+throw new ServiceException(ServiceException.SuccessCode.ApiError, "NUll or empty Folder Path");
+}
+if(!folderPath.startsWith("/")){
+throw new ServiceException(ServiceException.SuccessCode.ApiError, "Invalid folder path must start and end with /");
+}
+try{
+OperationContext context = session.createOperationContext();
+context.setRenditionFilterString("cmis:thumbnail");
+return (Folder) session.getObjectByPath(folderPath, context);
+}catch (Exception e)
+{
+logger.error(e);
+throw new ServiceException(ServiceException.SuccessCode.ApiError, "Unable to created folder object with path = "+ folderPath + " Expected Cause =" + e.getMessage());
+}
+}
+
+3. Create document in alfresco folder for which object is created in step 2.
+
+public Document createNewDocument(String documentName, String documentTitle, String documentDescription, String mimeType, Folder folder, InputStream oInputStream) throws ServiceException{
+if(documentName == null || documentName.isEmpty()){
+throw new ServiceException(ServiceException.SuccessCode.ApiError, "Document name is mandatory");
+}
+if(documentTitle == null || documentTitle.isEmpty()){
+documentTitle = documentName;
+}
+if(documentDescription == null || documentDescription.isEmpty()){
+documentDescription = documentName;
+}
+if(oInputStream == null){
+oInputStream = CreatePdfFile.createPdfFile(documentName, documentDescription);
+}
+if(mimeType == null || mimeType.isEmpty()){
+mimeType = "application/pdf";
+}
+//trying to create new document
+try
+{
+// Setting properties for new document to be created within repository
+Map<String, Object> propertiesDocument = new HashMap<String, Object>();
+propertiesDocument.put(PropertyIds.NAME, documentName);
+propertiesDocument.put(PropertyIds.OBJECT_TYPE_ID, "cmis:document,P:cm:titled");
+propertiesDocument.put("cm:title", documentTitle);
+propertiesDocument.put("cm:description", documentDescription);
+// Reading the content in Bytes stream and Writing it to new file in
+ContentStream contentStream = new ContentStreamImpl(documentName, null, mimeType, oInputStream);
+// creating document with name title and description
+return folder.createDocument(propertiesDocument, contentStream, VersioningState.MAJOR);
+} catch (Exception e)
+{
+logger.error(e);
+throw new ServiceException(ServiceException.SuccessCode.ApiError, "Unable to create document " + documentName + ". " + e.getMessage(), e);
+}
+}

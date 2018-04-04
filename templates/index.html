@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Chat Assistant</title>
+  <link rel="shortcut icon" href="./avatar/blank.ico" />
+  <link rel="stylesheet" href="/static/style/bootstrap.min.css">
+
+  <!--Google Icon Font-->
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+  <!-- Propeller css -->
+  <link href="/static/style/propeller.min.css" rel="stylesheet">
+  <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css" rel="stylesheet">
+  <link rel="stylesheet" type="text/css" href="/static/style/style.css">
+
+  <!--Animate css -->
+  <link rel="stylesheet" href="/static/style/animate.min.css">
+
+</head>
+
+
+<body>
+	<h1>Hello World</h1>
+	<form method="post" action = "/rest/api/">
+		<textarea type = "text" name = "name"></textarea>
+		<button type="submit"></button>
+		
+	</form>
+	{{resp}}
+</body>
+
+</html>

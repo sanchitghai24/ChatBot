@@ -1,0 +1,129 @@
+import java.io.ByteArrayInputStream;
+import java.io.UnsupportedEncodingException;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.chemistry.opencmis.client.api.CmisObject;
+import org.apache.chemistry.opencmis.client.api.Document;
+import org.apache.chemistry.opencmis.client.api.Folder;
+import org.apache.chemistry.opencmis.client.api.Repository;
+import org.apache.chemistry.opencmis.client.api.Session;
+import org.apache.chemistry.opencmis.client.api.SessionFactory;
+import org.apache.chemistry.opencmis.client.runtime.SessionFactoryImpl;
+import org.apache.chemistry.opencmis.commons.PropertyIds;
+import org.apache.chemistry.opencmis.commons.SessionParameter;
+import org.apache.chemistry.opencmis.commons.data.ContentStream;
+import org.apache.chemistry.opencmis.commons.enums.BaseTypeId;
+import org.apache.chemistry.opencmis.commons.enums.BindingType;
+import org.apache.chemistry.opencmis.commons.enums.UnfileObject;
+import org.apache.chemistry.opencmis.commons.enums.VersioningState;
+import org.apache.chemistry.opencmis.commons.exceptions.CmisObjectNotFoundException;
+//import org.apache.commons.lang3.StringUtils;
+
+
+public class Test {
+
+       private static Session session;
+       private static final String ALFRSCO_ATOMPUB_URL = "http://35.154.116.87:8030/share/page/site/claims/documentlibrary/";//"http://35.154.116.87:8030/alfresco/api/cmis/versions/1.0/atom/";
+       private static final String TEST_FOLDER_NAME = "chemistryTestFolder";
+       private static final String TEST_DOCUMENT_NAME_1 = "chemistryTest1.txt";
+       private static final String TEST_DOCUMENT_NAME_2 = "chemistryTest2.txt";
+
+       public static void main(String[] args) {
+              Folder root = connect();
+              System.out.println(root);
+              /*cleanup(root, TEST_FOLDER_NAME);
+              Folder newFolder = createFolder(root, TEST_FOLDER_NAME);
+              createDocument(newFolder, TEST_DOCUMENT_NAME_1);
+              createDocument(newFolder, TEST_DOCUMENT_NAME_2);
+              System.out.println("+++ List Folder +++");
+              listFolder(0, newFolder);
+              DeleteDocument(newFolder, "/" + TEST_DOCUMENT_NAME_2);
+              System.out.println("+++ List Folder +++");
+              listFolder(0, newFolder);*/
+       }
+
+       private static void cleanup(Folder target, String delFolderName) {
+              try {
+                     CmisObject object = session.getObjectByPath(target.getPath()
+                                  + delFolderName);
+                     Folder delFolder = (Folder) object;
+                     delFolder.deleteTree(true, UnfileObject.DELETE, true);
+              } catch (CmisObjectNotFoundException e) {
+                     System.err.println("No need to clean up.");
+              }
+       }
+
+       private static void listFolder(int depth, Folder target) {
+              String indent = "\t";
+              for (Iterator<CmisObject> it = target.getChildren().iterator(); it
+                           .hasNext();) {
+                     CmisObject o = it.next();
+                     if (BaseTypeId.CMIS_DOCUMENT.equals(o.getBaseTypeId())) {
+                           System.out.println(indent + "[Docment] " + o.getName());
+                     } else if (BaseTypeId.CMIS_FOLDER.equals(o.getBaseTypeId())) {
+                           System.out.println(indent + "[Folder] " + o.getName());
+                           listFolder(++depth, (Folder) o);
+                     }
+              }
+
+       }
+
+       private static void DeleteDocument(Folder target, String delDocName) {
+              try {
+                     CmisObject object = session.getObjectByPath(target.getPath()
+                                  + delDocName);
+                     Document delDoc = (Document) object;
+                     delDoc.delete(true);
+              } catch (CmisObjectNotFoundException e) {
+                     System.err.println("Document is not found: " + delDocName);
+              }
+       }
+
+       private static void createDocument(Folder target, String newDocName) {
+              Map<String, String> props = new HashMap<String, String>();
+              props.put(PropertyIds.OBJECT_TYPE_ID, "cmis:document");
+              props.put(PropertyIds.NAME, newDocName);
+              System.out.println("This is a test document: " + newDocName);
+              String content = "aegif Mind Share Leader Generating New Paradigms by aegif corporation.";
+              byte[] buf = null;
+              try {
+                     buf = content.getBytes("UTF-8");
+              } catch (UnsupportedEncodingException e) {
+                     e.printStackTrace();
+              }
+              ByteArrayInputStream input = new ByteArrayInputStream(buf);
+              ContentStream contentStream = session.getObjectFactory()
+                           .createContentStream(newDocName, buf.length,
+                                         "text/plain; charset=UTF-8", input);
+              target.createDocument(props, contentStream, VersioningState.MAJOR);
+       }
+
+       private static Folder createFolder(Folder target, String newFolderName) {
+              Map<String, String> props = new HashMap<String, String>();
+              props.put(PropertyIds.OBJECT_TYPE_ID, "cmis:folder");
+              props.put(PropertyIds.NAME, newFolderName);
+              Folder newFolder = target.createFolder(props);
+              return newFolder;
+       }
+
+       private static Folder connect() {
+              SessionFactory sessionFactory = SessionFactoryImpl.newInstance();
+              Map<String, String> parameter = new HashMap<String, String>();
+              parameter.put(SessionParameter.USER, "admin");
+              parameter.put(SessionParameter.PASSWORD, "admin");
+              parameter.put(SessionParameter.ATOMPUB_URL, ALFRSCO_ATOMPUB_URL);
+              parameter.put(SessionParameter.BINDING_TYPE,
+                           BindingType.ATOMPUB.value());
+              List<Repository> repositories = sessionFactory.getRepositories(parameter);
+
+              session = repositories.get(0).createSession();
+              return session.getRootFolder();
+       }
+}
+
+________________________________________
+
+Please do not print this email unless it is absolutely necessary.

@@ -1,0 +1,33 @@
+Microsoft Windows [Version 6.3.9600]
+(c) 2013 Microsoft Corporation. All rights reserved.
+
+C:\Users\Administrator>nslookup
+Default Server:  cch1wpdhcp3.corp.hexaware.com
+Address:  172.25.100.15
+
+> set type=mx
+>
+>
+
+Microsoft Windows [Version 6.3.9600]
+(c) 2013 Microsoft Corporation. All rights reserved.
+
+C:\Users\Administrator>nslookup
+Default Server:  cch1wpdhcp3.corp.hexaware.com
+Address:  172.25.100.15
+
+> set type=MX
+> cch1wpdhcp3.corp.hexaware.com
+Server:  cch1wpdhcp3.corp.hexaware.com
+Address:  172.25.100.15
+
+corp.hexaware.com
+        primary name server = cch1wpdc04.corp.hexaware.com
+        responsible mail addr = admin
+        serial  = 17010689
+        refresh = 900 (15 mins)
+        retry   = 600 (10 mins)
+        expire  = 86400 (1 day)
+        default TTL = 3600 (1 hour)
+>
+
